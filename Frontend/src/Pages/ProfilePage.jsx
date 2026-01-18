@@ -1,0 +1,51 @@
+import React from 'react'
+
+const ProfilePage = () => {
+    return (
+        <>
+            <div className='flex justify-center items-center bg-[#dbecff] min-h-screen'>
+                <div>
+                    <div className='flex justify-center '>
+                        <img
+                            src="https://wallpapers.com/images/hd/pfp-pictures-f2fh4fspnb6xtppy.jpg"
+                            alt="pfp"
+                            className='w-40 h-40 rounded-[50%]'
+                        />
+                    </div>
+                    <h1 className='mt-5 font-bold text-3xl text-center'>Jenny Vice</h1>
+                    <p className='mt-1 text-center text-gray-400'>Bio Lorewm ipsum</p>
+
+                    <form className='w-screen'>
+                        <div className='flex items-center justify-center mt-10'>
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder='Name'
+                                className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
+                            />
+                        </div>
+                        <div className='flex items-center justify-center mt-5'>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder='Email'
+                                className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
+                            />
+                        </div>
+                    </form>
+                    <div className='flex items-end justify-center mt-5 '>
+                        <button
+                            type='submit'
+                            className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-blue-600  text-white  font-bold text-lg'
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </>
+    )
+}
+
+export default ProfilePage
