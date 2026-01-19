@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 
 
 const Login = () => {
@@ -17,7 +18,7 @@ const Login = () => {
                 </div>
                 <h3 className='mt-5 font-bold text-3xl text-center'>Welcome Back!!</h3>
                 <h4
-                    className='mt-1 text-center text-gray-400'>Not a
+                    className='mt-1 text-center text-gray-400'>Not a {" "}
                     <Link to="/signup">
                         <span className='text-blue-600'>
                             user?
@@ -44,8 +45,8 @@ const Login = () => {
 
                         />
                     </div>
-
-                    <div className='flex items-center justify-center mt-10'>
+                    <br />
+                    <div className='flex items-center justify-center '>
                         <button
                             type='submit'
                             className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-blue-600  text-white  font-bold text-lg'
