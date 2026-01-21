@@ -1,8 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 
 
 const Login = () => {
+    const [form, setForm] = useState({
+        email: "",
+        password: ""
+    })
+
+    function onChange(e) {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    function submit(e) {
+        e.preventDefault()
+        console.log(form)
+    }
+
     return (<>
         <div className='flex justify-center bg-[#dbecff] min-h-screen'>
             <div>
@@ -26,11 +43,16 @@ const Login = () => {
                     </Link>
                 </h4>
 
-                <form className='mt-10  w-screen'>
+                <form
+                    className='mt-10  w-screen'
+                    onSubmit={submit}
+                >
                     <div className='flex items-center justify-center'>
                         <input
                             type="email"
                             name="email"
+                            value={form.email}
+                            onChange={onChange}
                             placeholder='Email'
                             className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
                         />
@@ -40,7 +62,9 @@ const Login = () => {
                         <input
                             type="password"
                             name="password"
+                            value={form.password}
                             placeholder='Password'
+                            onChange={onChange}
                             className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold '
 
                         />
