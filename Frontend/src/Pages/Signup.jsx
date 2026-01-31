@@ -70,24 +70,24 @@ const Signup = () => {
 
     return (
         <>
-            <div className="bg-[#dbecff] flex justify-center items-center">
+            <div className="bg-amber-100 flex justify-center items-center">
                 <div className="min-h-screen">
 
-                    <h1 className="font-extrabold text-5xl mt-5 text-center fascinate-regular">
+                    <h1 className="font-extrabold text-5xl mt-5 text-center text-amber-950 fascinate-regular">
                         Relay
                     </h1>
 
                     {/* Logo */}
-                    <div className="flex justify-center mt-5">
+                    <div className='flex justify-center mt-5'>
                         <img
-                            src="https://cdn-icons-png.flaticon.com/512/6016/6016788.png"
+                            src="https://www.gloryofthesnow.com/wp-content/uploads/2022/08/Viber-Fall.png"
                             alt="Logo"
-                            className="w-40 h-40"
+                            className='w-40 h-40 rounded-[50%]'
                         />
                     </div>
 
                     {/* Headings */}
-                    <h3 className="mt-5 font-bold text-3xl text-center">
+                    <h3 className="mt-5 font-bold text-3xl text-center text-amber-950">
                         Create Account!!
                     </h3>
 
@@ -161,7 +161,7 @@ const Signup = () => {
                         <div className="flex items-center justify-center">
                             <button
                                 type="submit"
-                                className="p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-blue-600 text-white font-bold text-lg"
+                                className="p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg"
                             >
                                 Create Account
                             </button>
