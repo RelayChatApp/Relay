@@ -1,23 +1,41 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom';
 
 
 const Login = () => {
+    const [form, setForm] = useState({
+        email: "",
+        password: ""
+    })
+
+    function onChange(e) {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    function submit(e) {
+        e.preventDefault()
+        console.log(form)
+    }
+
     return (<>
-        <div className='flex justify-center bg-[#dbecff] min-h-screen'>
+        <div className='flex justify-center bg-amber-100 min-h-screen'>
             <div>
-                <h1 className='font-extrabold text-5xl mt-5 text-center fascinate-regular'>Relay</h1>
+                <h1 className='font-extrabold text-5xl mt-5 text-center fascinate-regular text-amber-950'>Relay</h1>
 
                 {/* Logo */}
                 <div className='flex justify-center mt-5'>
                     <img
-                        src="https://cdn-icons-png.flaticon.com/512/6016/6016788.png"
+                        src="https://www.gloryofthesnow.com/wp-content/uploads/2022/08/Viber-Fall.png"
                         alt="Logo"
-                        className='w-40 h-40'
+                        className='w-40 h-40 rounded-[50%]'
                     />
                 </div>
-                <h3 className='mt-5 font-bold text-3xl text-center'>Welcome Back!!</h3>
+                <h3 className='mt-5 font-bold text-3xl text-center text-amber-950'>Welcome Back!!</h3>
                 <h4
-                    className='mt-1 text-center text-gray-400'>Not a
+                    className='mt-1 text-center text-gray-400'>Not a {" "}
                     <Link to="/signup">
                         <span className='text-blue-600'>
                             user?
@@ -25,11 +43,16 @@ const Login = () => {
                     </Link>
                 </h4>
 
-                <form className='mt-10  w-screen'>
+                <form
+                    className='mt-10  w-screen'
+                    onSubmit={submit}
+                >
                     <div className='flex items-center justify-center'>
                         <input
                             type="email"
                             name="email"
+                            value={form.email}
+                            onChange={onChange}
                             placeholder='Email'
                             className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
                         />
@@ -39,16 +62,18 @@ const Login = () => {
                         <input
                             type="password"
                             name="password"
+                            value={form.password}
                             placeholder='Password'
+                            onChange={onChange}
                             className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold '
 
                         />
                     </div>
-
-                    <div className='flex items-center justify-center mt-10'>
+                    <br />
+                    <div className='flex items-center justify-center '>
                         <button
                             type='submit'
-                            className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-blue-600  text-white  font-bold text-lg'
+                            className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950  text-white  font-bold text-lg'
                         >
                             Login
                         </button>
