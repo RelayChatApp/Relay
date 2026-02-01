@@ -3,7 +3,7 @@ import React from 'react'
 const ProfilePage = () => {
     return (
         <>
-            <div className='flex justify-center items-center bg-[#dbecff] min-h-screen'>
+            <div className='flex justify-center items-center bg-amber-100 min-h-screen'>
                 <div>
                     <div className='flex justify-center '>
                         <img
@@ -12,8 +12,7 @@ const ProfilePage = () => {
                             className='w-40 h-40 rounded-[50%]'
                         />
                     </div>
-                    <h1 className='mt-5 font-bold text-3xl text-center'>Jenny Vice</h1>
-                    <p className='mt-1 text-center text-gray-400'>Bio Lorewm ipsum</p>
+                    <h1 className='mt-5 font-extrabold text-3xl text-center text-amber-950'>Jenny Vice</h1>
 
                     <form className='w-screen'>
                         <div className='flex items-center justify-center mt-10'>
@@ -36,7 +35,7 @@ const ProfilePage = () => {
                     <div className='flex items-end justify-center mt-5 '>
                         <button
                             type='submit'
-                            className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-blue-600  text-white  font-bold text-lg'
+                            className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950  text-white  font-bold text-lg'
                         >
                             Logout
                         </button>
