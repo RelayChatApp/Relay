@@ -67,6 +67,19 @@ const Signup = () => {
             email: ""
         })
     }
+    useEffect(() => {
+        async function SignupApi() {
+            const api = await fetch("http://localhost:3000/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form)
+
+            })
+            const data = await api.json();
+
+        }
+        SignupApi();
+    }, [])
 
     return (
         <>
