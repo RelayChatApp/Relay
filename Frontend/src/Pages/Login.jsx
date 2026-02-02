@@ -42,6 +42,9 @@ const Login = () => {
                 return;
             }
         }
+        useEffect(() => {
+            LoginApi();
+        }, []);
     }
 
     return (<>
