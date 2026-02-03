@@ -19,6 +19,19 @@ const Login = () => {
         e.preventDefault()
         console.log(form)
     }
+    useEffect(() => {
+        async function LoginApi() {
+            const api = await fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form)
+
+            })
+            const data = await api.json();
+
+        }
+        LoginApi();
+    }, [])
 
     return (<>
         <div className='flex justify-center bg-amber-100 min-h-screen'>
