@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 
 const Login = () => {
+    const [err, setErr] = useState("")
     const [form, setForm] = useState({
         email: "",
         password: ""
@@ -17,7 +18,33 @@ const Login = () => {
 
     function submit(e) {
         e.preventDefault()
-        console.log(form)
+        if (form.confirmPassword != form.password) {
+            setErr("Passwords don't match")
+            return
+        }
+
+        setErr("")
+
+        setForm({
+            password: "",
+            email: ""
+        })
+
+        async function LoginApi() {
+            const api = await fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form)
+            })
+            const data = await api.json();
+            if (!api.ok) {
+                setErr(data.message || "Wrong email or password");
+                return;
+            }
+        }
+        useEffect(() => {
+            LoginApi();
+        }, []);
     }
     useEffect(() => {
         async function LoginApi() {
@@ -83,6 +110,9 @@ const Login = () => {
                         />
                     </div>
                     <br />
+                    <div className="flex items-center justify-center">
+                        <p className="text-red-600 text-lg">{err}</p>
+                    </div>
                     <div className='flex items-center justify-center '>
                         <button
                             type='submit'
