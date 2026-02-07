@@ -1,6 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 const ProfilePage = () => {
+    const [form, setForm] = useState({
+        name: "",
+        email: ""
+    })
+    function onChange(e) {
+        setForm({ ...form, [e.target.name]: e.target.value })
+    }
+    function submit(e) {
+        e.preventDefault()
+        console.log(form)
+
+    }
+    useEffect(() => {
+        async function ProfileApi() {
+            const api = await fetch("http://localhost:3000/profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+
+            })
+            const data = await api.json();
+
+        }
+        ProfileApi();
+    }, [])
+
     return (
         <>
             <div className='flex justify-center items-center bg-amber-100 min-h-screen'>
@@ -14,11 +39,13 @@ const ProfilePage = () => {
                     </div>
                     <h1 className='mt-5 font-extrabold text-3xl text-center text-amber-950'>Jenny Vice</h1>
 
-                    <form className='w-screen'>
+                    <form onSubmit={submit} className='w-screen'>
                         <div className='flex items-center justify-center mt-10'>
                             <input
                                 type="text"
                                 name="name"
+                                value={form.name}
+                                onChange={onChange}
                                 placeholder='Name'
                                 className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
                             />
@@ -27,11 +54,13 @@ const ProfilePage = () => {
                             <input
                                 type="email"
                                 name="email"
+                                value={form.email}
+                                onChange={onChange}
                                 placeholder='Email'
                                 className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
                             />
                         </div>
-                    </form>
+                    </form >
                     <div className='flex items-end justify-center mt-5 '>
                         <button
                             type='submit'
