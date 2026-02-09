@@ -53,6 +53,29 @@ const Signup = () => {
             password: "",
             email: "",
         });
+
+        // sending data to backend
+        async function sendData() {
+            try {
+                const api = await fetch("http://localhost:3000/api/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ Fname: form.FName, password: form.password, email: form.email })
+                })
+
+                if (!api.ok) {
+                    setErr("Something went wrong")
+                    return;
+                }
+
+                const data = await api.json();
+
+            } catch (err) {
+                setErr("Server Error");
+            }
+        }
+
+        sendData();
     }
 
     return (
