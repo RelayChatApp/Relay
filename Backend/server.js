@@ -1,18 +1,20 @@
 const express = require("express");
+const app = express();
 const cors = require("cors");
 require("dotenv").config();
 
-// Routes Folder
-const ReactRoutes = require("./Routes/ReactRoutes");
-
-const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+// Routes
+const Authentication = require("./Routes/Authentication");
 
-// Mounted frontend routes
-app.use("/", ReactRoutes);
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Use routes
+app.use("/api", Authentication);
 
 app.listen(PORT, () => {
-    console.log(`http://localhost:${PORT}`);
+    console.log(`Server running at http://localhost:${PORT}`);
 });
