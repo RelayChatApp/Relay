@@ -2,19 +2,18 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 
-// Routes
-const ReactRoutes = require("./Routes/ReactRoutes");
-const AuthenticationRoutes = require("./Routes/Authentication");
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(cors());
+app.use(express.json());
 
-// API routes
-app.use("/api", AuthenticationRoutes);
+// Routes
+const ReactRoutes = require("./Routes/ReactRoutes");
+const Authentication = require("./Routes/Authentication");
 
-// Frontend routes (if needed separately)
+app.use("/api", Authentication);
 app.use("/", ReactRoutes);
 
 // Serve frontend build
@@ -26,5 +25,5 @@ app.get(/.*/, (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running at http://localhost:${PORT}`);
 });
