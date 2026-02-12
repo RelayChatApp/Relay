@@ -99,7 +99,7 @@ const Signup = () => {
 
                 <p className="mt-1 text-center text-gray-400">
                     Already a{" "}
-                    <Link to="/">
+                    <Link to="/login">
                         <span className="text-blue-600">user?</span>
                     </Link>
                 </p>
