@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../Schema/User");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 router.post("/profile", async (req, res) => {

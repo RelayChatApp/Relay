@@ -1,29 +1,25 @@
 const express = require("express");
-const path = require("path");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 
 // Routes
-const ReactRoutes = require("./Routes/ReactRoutes");
 const Authentication = require("./Routes/Authentication");
+const ReactRoutes = require("./Routes/ReactRoutes");
 
 app.use("/api", Authentication);
 app.use("/", ReactRoutes);
-
-// Serve frontend build
-const distPath = path.resolve(__dirname, "../Frontend/dist");
-app.use(express.static(distPath));
-
-app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-});
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
