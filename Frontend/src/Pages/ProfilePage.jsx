@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+import { Link } from "react-router-dom"
 const ProfilePage = () => {
     const [form, setForm] = useState({
         name: "",
@@ -28,9 +28,24 @@ const ProfilePage = () => {
 
     return (
         <>
-            <div className='flex justify-center items-center bg-amber-100 min-h-screen'>
+            <div className='flex justify-center  bg-amber-100 min-h-screen'>
                 <div>
-                    <div className='flex justify-center '>
+                    <div className="flex p-4 justify-between">
+                        <Link to="/chat">
+                            <p className='font-extrabold text-5xl text-center fascinate-regular text-amber-950'>Relay</p>
+                        </Link>
+
+                        <Link to="/profile">
+                            <img
+                                src="https://images.pexels.com/photos/27665348/pexels-photo-27665348.jpeg"
+                                alt="profile"
+                                className="rounded-full h-10 w-10"
+                            />
+                        </Link>
+                    </div>
+
+
+                    <div className='flex justify-center items-center mt-10'>
                         <img
                             src="https://wallpapers.com/images/hd/pfp-pictures-f2fh4fspnb6xtppy.jpg"
                             alt="pfp"
