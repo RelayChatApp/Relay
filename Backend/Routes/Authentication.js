@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 // Signup
-router.post("/api/signup", async (req, res) => {
+router.post("/signup", async (req, res) => {
     try {
         const { email, FName, password } = req.body;
 
@@ -31,7 +31,7 @@ router.post("/api/signup", async (req, res) => {
 });
 
 // Login
-router.post("/api/login", async (req, res) => {
+router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -66,7 +66,7 @@ router.post("/api/login", async (req, res) => {
 });
 
 // Logout
-router.post("/api/logout", (req, res) => {
+router.post("/logout", (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
         secure: false,
