@@ -1,15 +1,15 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const mongoose = require("mongoose")
-require("dotenv").config();
+
+const connectDB = require("./Database/Mongodb");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected"))
-    .catch(err => console.log(err));
+connectDB();
 
 // Middleware
 app.use(cors({
