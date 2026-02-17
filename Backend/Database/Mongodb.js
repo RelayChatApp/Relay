@@ -9,11 +9,13 @@ const connectDB = async () => {
         await mongoose.connect(process.env.MONGO_URL, {
             autoIndex: false,
             serverSelectionTimeoutMS: 10000,
+            family: 4   // force IPv4
         });
+
         console.log("MongoDB connected");
     } catch (error) {
         console.error("MongoDB connection failed:", error);
-        process.exit(1); // ensures the app doesn't run with a broken DB
+        process.exit(1);
     }
 };
 
