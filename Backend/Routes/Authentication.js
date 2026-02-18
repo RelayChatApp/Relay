@@ -5,35 +5,54 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-// Signup
+/* =========================
+   SIGNUP
+========================= */
 router.post("/signup", async (req, res) => {
     try {
         const { email, FName, password } = req.body;
 
+        // Basic validation
+        if (!email || !FName || !password) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        // Check existing user
         const isExists = await User.findOne({ email });
         if (isExists) {
             return res.status(400).json({ message: "Email already registered" });
         }
 
+        // Hash password
         const hashPass = await bcrypt.hash(password, 10);
 
+        // Create user
         await User.create({
             email,
             FName,
-            password: hashPass
+            password: hashPass,
         });
 
-        return res.status(201).json({ message: "User registered successfully" });
+        return res.status(201).json({
+            message: "User registered successfully",
+        });
 
     } catch (err) {
+        console.error("Signup error:", err);
         return res.status(500).json({ message: "Server error" });
     }
 });
 
-// Login
+/* =========================
+   LOGIN
+========================= */
 router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
 
         const user = await User.findOne({ email });
         if (!user) {
@@ -53,27 +72,34 @@ router.post("/login", async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
+            secure: false, // set true in production HTTPS
             sameSite: "lax",
-            maxAge: 3 * 24 * 60 * 60 * 1000
+            maxAge: 3 * 24 * 60 * 60 * 1000,
         });
 
-        return res.status(200).json({ message: "Login successful" });
+        return res.status(200).json({
+            message: "Login successful",
+        });
 
     } catch (err) {
+        console.error("Login error:", err);
         return res.status(500).json({ message: "Server error" });
     }
 });
 
-// Logout
+/* =========================
+   LOGOUT
+========================= */
 router.post("/logout", (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
         secure: false,
-        sameSite: "lax"
+        sameSite: "lax",
     });
 
-    return res.json({ message: "Logged out successfully" });
+    return res.status(200).json({
+        message: "Logged out successfully",
+    });
 });
 
 module.exports = router;

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
+    const navigate = useNavigate();
     const [err, setErr] = useState("");
     const [form, setForm] = useState({
         FName: "",
@@ -60,17 +61,24 @@ const Signup = () => {
                 const api = await fetch("http://localhost:3000/api/signup", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ Fname: form.FName, password: form.password, email: form.email })
-                })
+                    body: JSON.stringify({
+                        FName: form.FName,
+                        password: form.password,
+                        email: form.email,
+                    }),
+                });
 
-                if (!api.ok) {
-                    setErr("Something went wrong")
+                const data = await api.json();
+                setErr(data.message || "Something went wrong");
+
+                if (api.status === 201) {
+                    navigate("/login");
                     return;
                 }
 
-                const data = await api.json();
 
             } catch (err) {
+                console.error(err);
                 setErr("Server Error");
             }
         }
@@ -143,7 +151,7 @@ const Signup = () => {
                     </div>
 
                     <div className="flex justify-center mt-6">
-                        <button
+                        <link rel="stylesheet" href="" /><button
                             type="submit"
                             className='absolute bottom-15 p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg'
                         >
