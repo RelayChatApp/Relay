@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+    const navigate = useNavigate();
     const [err, setErr] = useState("");
     const [form, setForm] = useState({
         email: "",
@@ -21,7 +22,7 @@ const Login = () => {
 
         async function loginApi() {
             try {
-                const api = await fetch("http://localhost:3000/login", {
+                const api = await fetch("http://localhost:3000/api/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -31,6 +32,9 @@ const Login = () => {
                 });
 
                 const data = await api.json();
+                if (api.status == 200) {
+                    navigate("/chat")
+                }
 
                 if (!api.ok) {
                     setErr(data.message || "Something went wrong");
