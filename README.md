@@ -102,32 +102,6 @@ Relay/
 └── README.md
 ```
 
-Relay/
-│
-├── server/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── sockets/
-│   └── server.js
-│
-├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── store/
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── index.html
-│   └── package.json
-│
-└── README.md
-
-```
-
----
-
 ## Environment Variables
 
 Do not commit real credentials to version control. Use a local `.env` file.
