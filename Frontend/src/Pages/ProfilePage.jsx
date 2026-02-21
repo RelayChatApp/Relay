@@ -1,30 +1,64 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from "react-router-dom"
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 const ProfilePage = () => {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         name: "",
         email: ""
-    })
+    });
+
+    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
     function onChange(e) {
-        setForm({ ...form, [e.target.name]: e.target.value })
+        const { name, value } = e.target;
+        setForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
     }
-    function submit(e) {
-        e.preventDefault()
-        console.log(form)
 
-    }
-    useEffect(() => {
-        async function ProfileApi() {
-            const api = await fetch("http://localhost:3000/profile", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+    async function fetchProfile() {
+        try {
+            const response = await fetch(`${BASE_URL}/profile`, {
+                method: "GET",
+                credentials: "include"
+            });
 
-            })
-            const data = await api.json();
+            if (!response.ok) {
+                navigate("/login");
+                return;
+            }
 
+            const data = await response.json();
+
+            setForm({
+                name: data.name || "",
+                email: data.email || ""
+            });
+
+        } catch {
+            navigate("/login");
         }
-        ProfileApi();
-    }, [])
+    }
+
+    async function handleLogout() {
+        try {
+            await fetch(`${BASE_URL}/logout`, {
+                method: "POST",
+                credentials: "include"
+            });
+
+            navigate("/login");
+
+        } catch {
+            navigate("/login");
+        }
+    }
+
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
     return (
         <>
