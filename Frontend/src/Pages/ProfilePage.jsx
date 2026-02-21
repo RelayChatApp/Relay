@@ -43,11 +43,11 @@ const ProfilePage = () => {
             }
 
             const data = await response.json();
+            setCurrentUser(data.user);
 
-            setCurrentUser(data);
             setForm({
-                FName: data.FName || "",
-                email: data.email || ""
+                FName: data.user.FName || "",
+                email: data.user.email || ""
             });
 
             setLoading(false);
@@ -77,15 +77,14 @@ const ProfilePage = () => {
                 setErr("Something Went Wrong");
                 return;
             }
+            const result = await res.json();
 
-            const updatedUser = await res.json();
+            setCurrentUser(result.user);
 
-            setCurrentUser(updatedUser);
             setForm({
-                FName: updatedUser.FName,
-                email: updatedUser.email
+                FName: result.user.FName,
+                email: result.user.email
             });
-
             setErr("");
 
         } catch {
@@ -124,7 +123,7 @@ const ProfilePage = () => {
 
                     <Link to="/profile">
                         <img
-                            src={currentUser?.profilePhoto}
+                            src={currentUser.profilePhoto}
                             alt="profile"
                             className="rounded-full h-10 w-10"
                         />
@@ -133,7 +132,7 @@ const ProfilePage = () => {
 
                 <div className='flex justify-center items-center mt-10'>
                     <img
-                        src={currentUser?.profilePhoto}
+                        src={currentUser.profilePhoto}
                         alt="pfp"
                         className='w-40 h-40 rounded-full'
                     />
