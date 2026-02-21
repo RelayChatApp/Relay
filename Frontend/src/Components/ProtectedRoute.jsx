@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }) => {
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const res = await fetch(`${BASE_URL}/api/auth/me`, {
+                const res = await fetch(`${BASE_URL}/api/me`, {
                     method: "GET",
                     credentials: "include",
                 });
