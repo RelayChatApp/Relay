@@ -41,10 +41,17 @@ const ProfilePage = () => {
             navigate("/login");
         }
     }
+    async function sendData() {
+        const api = await fetch(`${BASE_URL}/profile`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(form),
+        });
+    }
 
     async function handleLogout() {
         try {
-            await fetch(`${BASE_URL}/logout`, {
+            await fetch(`${BASE_URL}/api/logout`, {
                 method: "POST",
                 credentials: "include"
             });
@@ -88,7 +95,7 @@ const ProfilePage = () => {
                     </div>
                     <h1 className='mt-5 font-extrabold text-3xl text-center text-amber-950'>Jenny Vice</h1>
 
-                    <form onSubmit={submit} className='w-screen'>
+                    <form className='w-screen'>
                         <div className='flex items-center justify-center mt-10'>
                             <input
                                 type="text"
@@ -112,8 +119,8 @@ const ProfilePage = () => {
                     </form >
                     <div className='flex items-end justify-center mt-5 '>
                         <button
-                            onClick={handleLogout}
-                            type='button'
+                            onSubmit={handleLogout}
+                            type='submit'
                             className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950  text-white  font-bold text-lg'
                         >
                             Logout
