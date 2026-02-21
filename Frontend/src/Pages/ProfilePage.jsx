@@ -112,7 +112,8 @@ const ProfilePage = () => {
                     </form >
                     <div className='flex items-end justify-center mt-5 '>
                         <button
-                            type='submit'
+                            onClick={handleLogout}
+                            type='button'
                             className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950  text-white  font-bold text-lg'
                         >
                             Logout
