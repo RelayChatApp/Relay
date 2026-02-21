@@ -32,7 +32,7 @@ const ProfilePage = () => {
 
     async function fetchUser() {
         try {
-            const response = await fetch(`${BASE_URL}/api/auth/me`, {
+            const response = await fetch(`${BASE_URL}/api/me`, {
                 method: "GET",
                 credentials: "include"
             });
