@@ -9,49 +9,46 @@ const Login = () => {
         password: "",
     });
 
+    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
     function onChange(e) {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
+        const { name, value } = e.target;
+        setForm(prev => ({
+            ...prev,
+            [name]: value,
+        }));
     }
 
-    function submit(e) {
+    async function submit(e) {
         e.preventDefault();
         setErr("");
 
-        async function loginApi() {
-            try {
-                const api = await fetch("http://localhost:3000/api/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        email: form.email,
-                        password: form.password,
-                    }),
-                    credentials: "include",
-                });
-
-                const data = await api.json();
-                if (api.status == 200) {
-                    navigate("/chat")
-                }
-
-                if (!api.ok) {
-                    setErr(data.message || "Something went wrong");
-                    return;
-                }
-
-                setForm({
-                    email: "",
-                    password: "",
-                });
-            } catch (error) {
-                setErr("Server error");
-            }
+        if (!form.email || !form.password) {
+            setErr("All fields are required");
+            return;
         }
 
-        loginApi();
+        try {
+            const response = await fetch(`${BASE_URL}/api/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+                credentials: "include",
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setErr(data.message || "Invalid credentials");
+                return;
+            }
+
+            setForm({ email: "", password: "" });
+            navigate("/chat");
+
+        } catch {
+            setErr("Server error");
+        }
     }
 
     return (

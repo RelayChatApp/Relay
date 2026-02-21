@@ -10,21 +10,20 @@ const Signup = () => {
         email: "",
     });
 
+    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
     function setFormValue(e) {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
+        const { name, value } = e.target;
+        setForm(prev => ({
+            ...prev,
+            [name]: value,
+        }));
     }
 
-    function submit(e) {
+    async function submit(e) {
         e.preventDefault();
 
-        if (
-            !form.FName.trim() ||
-            !form.email.trim() ||
-            !form.password.trim()
-        ) {
+        if (!form.FName.trim() || !form.email.trim() || !form.password.trim()) {
             setErr("All fields are required");
             return;
         }
@@ -49,41 +48,32 @@ const Signup = () => {
         }
 
         setErr("");
-        setForm({
-            FName: "",
-            password: "",
-            email: "",
-        });
 
-        // sending data to backend
-        async function sendData() {
-            try {
-                const api = await fetch("http://localhost:3000/api/signup", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        FName: form.FName,
-                        password: form.password,
-                        email: form.email,
-                    }),
-                });
+        try {
+            const response = await fetch(`${BASE_URL}/api/signup`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
 
-                const data = await api.json();
+            const data = await response.json();
+
+            if (!response.ok) {
                 setErr(data.message || "Something went wrong");
-
-                if (api.status === 201) {
-                    navigate("/login");
-                    return;
-                }
-
-
-            } catch (err) {
-                console.error(err);
-                setErr("Server Error");
+                return;
             }
-        }
 
-        sendData();
+            setForm({
+                FName: "",
+                password: "",
+                email: "",
+            });
+
+            navigate("/login");
+
+        } catch (error) {
+            setErr("Server Error");
+        }
     }
 
     return (
