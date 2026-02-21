@@ -31,7 +31,8 @@ const Chat = () => {
             }
 
             const data = await response.json();
-            setCurrentUser(data);
+            setCurrentUser(data.user);
+
         } catch (error) {
             navigate("/login");
         }
