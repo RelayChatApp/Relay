@@ -3,11 +3,12 @@ import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
     const [status, setStatus] = useState("loading");
+    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const res = await fetch("http://localhost:3000/api/auth/me", {
+                const res = await fetch(`${BASE_URL}/api/auth/me`, {
                     method: "GET",
                     credentials: "include",
                 });

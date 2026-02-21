@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Chat = () => {
+    const navigate = useNavigate();
+    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
     const [selectedUser, setSelectedUser] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
 
     const users = [
         { id: 1, name: "Muskan", img: "https://i.pinimg.com/originals/b2/ea/a0/b2eaa0d4918d54021f9c7aa3fc3d3cf3.jpg" },
@@ -11,22 +15,51 @@ const Chat = () => {
         { id: 4, name: "Sam", img: "https://wallpapers.com/images/hd/oscar-zahn-skeleton-headphones-unique-cool-pfp-rboah21ctf7m37o0.jpg" },
     ];
 
+    async function fetchUser() {
+        try {
+            const response = await fetch(`${BASE_URL}/api/auth/me`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                navigate("/login");
+                return;
+            }
+
+            const data = await response.json();
+            setCurrentUser(data);
+        } catch (error) {
+            navigate("/login");
+        }
+    }
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
     return (
         <div className="flex h-screen">
 
-            {/* ================= SIDEBAR ================= */}
+            {/* SIDEBAR */}
             <div className={`bg-amber-950 text-white w-full md:w-[30%] ${selectedUser ? "hidden md:block" : "block"}`}>
                 <div className="flex justify-between items-center p-4">
+                    <p className="font-extrabold text-5xl text-center fascinate-regular text-amber-100">
+                        Relay
+                    </p>
 
-                    <p className='font-extrabold text-5xl text-center fascinate-regular text-amber-100'>Relay</p>
-
-                    <Link to="/profile">
-                        <img
-                            src="https://images.pexels.com/photos/27665348/pexels-photo-27665348.jpeg"
-                            alt="profile"
-                            className="rounded-full h-10 w-10"
-                        />
-                    </Link>
+                    {currentUser && (
+                        <Link to="/profile">
+                            <img
+                                src={currentUser.profilePhoto}
+                                alt="profile"
+                                className="rounded-full h-10 w-10"
+                            />
+                        </Link>
+                    )}
                 </div>
 
                 <div className="px-4">
@@ -49,20 +82,17 @@ const Chat = () => {
                 ))}
             </div>
 
-            {/* ================= CHAT AREA ================= */}
+            {/* CHAT AREA */}
             <div
                 className={`
-          bg-amber-100 flex flex-col
-          w-full md:w-[70%]
-          ${!selectedUser ? "hidden md:flex" : "flex"}
-        `}
+                    bg-amber-100 flex flex-col
+                    w-full md:w-[70%]
+                    ${!selectedUser ? "hidden md:flex" : "flex"}
+                `}
             >
                 {selectedUser && (
                     <>
-                        {/* Header */}
                         <div className="flex items-center gap-4 p-4 border-b border-amber-300">
-
-                            {/* Back button only for mobile */}
                             <button
                                 onClick={() => setSelectedUser(null)}
                                 className="md:hidden text-xl"
@@ -81,12 +111,10 @@ const Chat = () => {
                             </p>
                         </div>
 
-                        {/* Messages Area */}
                         <div className="flex-1 p-4 overflow-y-auto">
-                            {/* Messages go here */}
+                            {/* Messages */}
                         </div>
 
-                        {/* Input Area */}
                         <div className="p-4 border-t border-amber-300 flex gap-3">
                             <input
                                 type="text"
@@ -100,7 +128,7 @@ const Chat = () => {
                     </>
                 )}
             </div>
-        </div >
+        </div>
     );
 };
 
