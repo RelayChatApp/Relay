@@ -29,6 +29,7 @@ const Login = () => {
                         email: form.email,
                         password: form.password,
                     }),
+                    credentials: "include",
                 });
 
                 const data = await api.json();
