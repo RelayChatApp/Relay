@@ -11,20 +11,21 @@ const PORT = process.env.PORT || 3000;
 
 connectDB();
 
-// Middleware
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:5173",
     credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
 const Authentication = require("./Routes/Authentication");
 const ReactRoutes = require("./Routes/ReactRoutes");
+const Pages = require("./Routes/Pages")
 
 app.use("/api", Authentication);
 app.use("/", ReactRoutes);
+app.use("/profile", Pages);
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
