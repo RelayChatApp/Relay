@@ -3,8 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
     const navigate = useNavigate();
+
+    const [err, setErr] = useState("");
+    const [file, setFile] = useState(null);
+
     const [form, setForm] = useState({
-        name: "",
+        FName: "",
         email: ""
     });
 
@@ -18,35 +22,67 @@ const ProfilePage = () => {
         }));
     }
 
-    async function fetchProfile() {
-        try {
-            const response = await fetch(`${BASE_URL}/profile`, {
-                method: "GET",
-                credentials: "include"
-            });
-
-            if (!response.ok) {
-                navigate("/login");
-                return;
-            }
-
-            const data = await response.json();
-
-            setForm({
-                name: data.name || "",
-                email: data.email || ""
-            });
-
-        } catch {
-            navigate("/login");
+    function handleFileChange(e) {
+        if (e.target.files && e.target.files[0]) {
+            setFile(e.target.files[0]);
         }
     }
+
+    // Fetch profile on mount
+    useEffect(() => {
+        async function fetchProfile() {
+            try {
+                const res = await fetch(`${BASE_URL}/profile`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                if (!res.ok) {
+                    navigate("/login");
+                    return;
+                }
+
+                const data = await res.json();
+
+                setForm({
+                    FName: data.FName || "",
+                    email: data.email || ""
+                });
+
+            } catch {
+                navigate("/login");
+            }
+        }
+
+        fetchProfile();
+    }, [BASE_URL, navigate]);
+
+    // Update profile
     async function sendData() {
-        const api = await fetch(`${BASE_URL}/profile`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-        });
+        try {
+            const formData = new FormData();
+            formData.append("FName", form.FName);
+            formData.append("email", form.email);
+
+            if (file) {
+                formData.append("file", file);
+            }
+
+            const res = await fetch(`${BASE_URL}/profile`, {
+                method: "POST",
+                credentials: "include",
+                body: formData
+            });
+
+            if (!res.ok) {
+                setErr("Something Went Wrong");
+            } else {
+                setErr("");
+            }
+
+        } catch {
+            setErr("Something Went Wrong");
+        }
     }
 
     async function handleLogout() {
@@ -63,13 +99,9 @@ const ProfilePage = () => {
         }
     }
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
-
     return (
         <>
-            <div className='flex justify-center  bg-amber-100 min-h-screen'>
+            <div className='flex justify-center bg-amber-100 min-h-screen'>
                 <div>
                     <div className="flex p-4 justify-between">
                         <Link to="/chat">
@@ -85,7 +117,6 @@ const ProfilePage = () => {
                         </Link>
                     </div>
 
-
                     <div className='flex justify-center items-center mt-10'>
                         <img
                             src="https://wallpapers.com/images/hd/pfp-pictures-f2fh4fspnb6xtppy.jpg"
@@ -93,19 +124,33 @@ const ProfilePage = () => {
                             className='w-40 h-40 rounded-[50%]'
                         />
                     </div>
-                    <h1 className='mt-5 font-extrabold text-3xl text-center text-amber-950'>Jenny Vice</h1>
+
+                    <h1 className='mt-5 font-extrabold text-3xl text-center text-amber-950'>
+                        {form.FName}
+                    </h1>
 
                     <form className='w-screen'>
-                        <div className='flex items-center justify-center mt-10'>
+
+                        <div className='flex items-center justify-center mt-5'>
                             <input
-                                type="text"
-                                name="name"
-                                value={form.name}
-                                onChange={onChange}
-                                placeholder='Name'
-                                className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
+                                type="file"
+                                name="file"
+                                onChange={handleFileChange}
+                                className='p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
                             />
                         </div>
+
+                        <div className='flex items-center justify-center mt-5'>
+                            <input
+                                type="text"
+                                name="FName"
+                                value={form.FName}
+                                onChange={onChange}
+                                placeholder='Name'
+                                className='p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
+                            />
+                        </div>
+
                         <div className='flex items-center justify-center mt-5'>
                             <input
                                 type="email"
@@ -113,24 +158,41 @@ const ProfilePage = () => {
                                 value={form.email}
                                 onChange={onChange}
                                 placeholder='Email'
-                                className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
+                                className='p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-white text-[8E9AAF] font-bold'
                             />
                         </div>
-                    </form >
-                    <div className='flex items-end justify-center mt-5 '>
-                        <button
-                            onSubmit={handleLogout}
-                            type='submit'
-                            className=' p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950  text-white  font-bold text-lg'
-                        >
-                            Logout
-                        </button>
+
+                    </form>
+
+                    <div className="flex items-center justify-center">
+                        <p className="text-red-600 text-lg">{err}</p>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <div className="flex gap-x-10 absolute bottom-15">
+
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                className='p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg'
+                            >
+                                Logout
+                            </button>
+
+                            <button
+                                type='button'
+                                onClick={sendData}
+                                className='p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-900 text-white font-bold text-lg'
+                            >
+                                Change
+                            </button>
+
+                        </div>
                     </div>
                 </div>
-
             </div>
         </>
-    )
-}
+    );
+};
 
-export default ProfilePage
+export default ProfilePage;

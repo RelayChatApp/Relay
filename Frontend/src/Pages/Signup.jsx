@@ -141,7 +141,7 @@ const Signup = () => {
                     </div>
 
                     <div className="flex justify-center mt-6">
-                        <link rel="stylesheet" href="" /><button
+                        <button
                             type="submit"
                             className='absolute bottom-15 p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg'
                         >
