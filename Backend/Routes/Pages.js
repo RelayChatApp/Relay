@@ -38,20 +38,15 @@ router.get("/profile", async (req, res) => {
 router.post("/profileUpdate", upload.single("file"), async (req, res) => {
     try {
         const token = req.cookies.token;
-
-        if (!token) {
-            return res.status(401).json({ message: "User not authenticated" });
-        }
+        if (!token) return res.status(401).json({ message: "Unauthorized" });
 
         const verify = jwt.verify(token, process.env.JWT_SECRET);
         const userId = verify.id;
 
         const { email, FName } = req.body;
 
-        // Email uniqueness check
         if (email) {
             const existingUser = await User.findOne({ email });
-
             if (existingUser && existingUser._id.toString() !== userId) {
                 return res.status(400).json({ message: "Email already in use" });
             }
@@ -59,27 +54,21 @@ router.post("/profileUpdate", upload.single("file"), async (req, res) => {
 
         const updateData = { email, FName };
 
-        // If file uploaded
         if (req.file) {
-            updateData.profileImage = req.file.filename;
+            updateData.profilePhoto = `/uploads/${req.file.filename}`;
         }
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             updateData,
             { new: true }
-        ).select("email FName");
-
-        if (!updatedUser) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        ).select("email FName profilePhoto");
 
         return res.status(200).json({
-            message: "Profile updated successfully",
             user: updatedUser
         });
 
-    } catch (err) {
+    } catch {
         return res.status(500).json({ message: "Server error" });
     }
 });

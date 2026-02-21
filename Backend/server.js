@@ -19,13 +19,16 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Serve uploaded images
+app.use("/uploads", express.static("uploads"));
+
 const Authentication = require("./Routes/Authentication");
 const ReactRoutes = require("./Routes/ReactRoutes");
-const Pages = require("./Routes/Pages")
+const Pages = require("./Routes/Pages");
 
 app.use("/api", Authentication);
-app.use("/", ReactRoutes);
 app.use("/api", Pages);
+app.use("/", ReactRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
