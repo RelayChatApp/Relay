@@ -25,7 +25,7 @@ const Pages = require("./Routes/Pages")
 
 app.use("/api", Authentication);
 app.use("/", ReactRoutes);
-app.use("/profile", Pages);
+app.use("/api", Pages);
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

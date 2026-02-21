@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require("../Schema/User");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-require("dotenv").config();
+
 
 const upload = multer({ dest: "uploads/" });
 
@@ -35,7 +35,7 @@ router.get("/profile", async (req, res) => {
 /* =========================
    UPDATE PROFILE
 ========================= */
-router.post("/profile", upload.single("file"), async (req, res) => {
+router.post("/profileUpdate", upload.single("file"), async (req, res) => {
     try {
         const token = req.cookies.token;
 

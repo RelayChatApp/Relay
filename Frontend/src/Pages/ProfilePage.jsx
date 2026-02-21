@@ -28,34 +28,6 @@ const ProfilePage = () => {
         }
     }
 
-    // Fetch profile on mount
-    useEffect(() => {
-        async function fetchProfile() {
-            try {
-                const res = await fetch(`${BASE_URL}/profile`, {
-                    method: "GET",
-                    credentials: "include"
-                });
-
-                if (!res.ok) {
-                    navigate("/login");
-                    return;
-                }
-
-                const data = await res.json();
-
-                setForm({
-                    FName: data.FName || "",
-                    email: data.email || ""
-                });
-
-            } catch {
-                navigate("/login");
-            }
-        }
-
-        fetchProfile();
-    }, [BASE_URL, navigate]);
 
     // Update profile
     async function sendData() {
@@ -68,7 +40,7 @@ const ProfilePage = () => {
                 formData.append("file", file);
             }
 
-            const res = await fetch(`${BASE_URL}/profile`, {
+            const res = await fetch(`${BASE_URL}/api/profileUpdate`, {
                 method: "POST",
                 credentials: "include",
                 body: formData
