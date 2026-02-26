@@ -184,7 +184,7 @@ const ProfilePage = () => {
                         <button
                             type="button"
                             onClick={handleLogout}
-                            className='p-4 rounded-full shadow-2xl bg-amber-950 text-white font-bold text-lg'
+                            className='absolute bottom-5 p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg hover:text-amber-950 hover:bg-amber-50 cursor-pointer'
                         >
                             Logout
                         </button>
@@ -192,7 +192,7 @@ const ProfilePage = () => {
                         <button
                             type='button'
                             onClick={sendData}
-                            className='p-4 rounded-full shadow-2xl bg-amber-900 text-white font-bold text-lg'
+                            className='absolute bottom-5 p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl hover:bg-amber-950 hover:text-white font-bold text-lg text-amber-950 bg-amber-50 '
                         >
                             Change
                         </button>
