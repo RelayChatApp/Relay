@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 
 const Chat = () => {
     const navigate = useNavigate();
@@ -7,40 +8,78 @@ const Chat = () => {
 
     const [selectedUser, setSelectedUser] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
+    const [users, setUsers] = useState([]);
 
-    const users = [
-        { id: 1, name: "Muskan", img: "https://i.pinimg.com/originals/b2/ea/a0/b2eaa0d4918d54021f9c7aa3fc3d3cf3.jpg" },
-        { id: 2, name: "Renne", img: "https://wallpapers.com/images/hd/pfp-pictures-f2fh4fspnb6xtppy.jpg" },
-        { id: 3, name: "Jessi", img: "https://i.pinimg.com/originals/35/66/f2/3566f254a759543a683278f8dd545cda.jpg" },
-        { id: 4, name: "Sam", img: "https://wallpapers.com/images/hd/oscar-zahn-skeleton-headphones-unique-cool-pfp-rboah21ctf7m37o0.jpg" },
-    ];
-
-    async function fetchUser() {
-        try {
-            const response = await fetch(`${BASE_URL}/api/me`, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!response.ok) {
-                navigate("/login");
-                return;
-            }
-
-            const data = await response.json();
-            setCurrentUser(data.user);
-
-        } catch (error) {
-            navigate("/login");
-        }
-    }
 
     useEffect(() => {
+        async function ActiveUsers() {
+            try {
+                const api = await fetch(`${BASE_URL}/api/database`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                if (!api.ok) return;
+
+                const data = await api.json();
+                setUsers(data);
+
+            } catch (error) {
+                console.error("Failed to fetch users");
+            }
+        }
+
+        ActiveUsers();
+    }, [BASE_URL]);
+
+
+    useEffect(() => {
+        async function fetchUser() {
+            try {
+                const response = await fetch(`${BASE_URL}/api/me`, {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    navigate("/login");
+                    return;
+                }
+
+                const data = await response.json();
+                setCurrentUser(data.user);
+
+            } catch (error) {
+                navigate("/login");
+            }
+        }
+
         fetchUser();
-    }, []);
+    }, [BASE_URL, navigate]);
+
+
+    const socket = useMemo(() => {
+        return io(BASE_URL, {
+            withCredentials: true
+        });
+    }, [BASE_URL]);
+
+    useEffect(() => {
+
+        socket.on("connect", () => {
+            console.log("Connected:", socket.id);
+            socket.emit("welcome", "hello muskan don");
+        });
+
+        return () => {
+            socket.off("connect");
+            socket.disconnect();
+        };
+
+    }, [socket]);
 
     return (
         <div className="flex h-screen">
@@ -71,14 +110,19 @@ const Chat = () => {
                     />
                 </div>
 
+
                 {users.map((user) => (
                     <div
-                        key={user.id}
+                        key={user._id}
                         onClick={() => setSelectedUser(user)}
                         className="p-4 hover:bg-amber-900 cursor-pointer flex items-center gap-3"
                     >
-                        <img src={user.img} alt="" className="h-12 w-12 rounded-full" />
-                        <p className="font-semibold">{user.name}</p>
+                        <img
+                            src={user.profilePhoto}
+                            alt=""
+                            className="h-12 w-12 rounded-full"
+                        />
+                        <p className="font-semibold">{user.FName}</p>
                     </div>
                 ))}
             </div>
@@ -102,18 +146,18 @@ const Chat = () => {
                             </button>
 
                             <img
-                                src={selectedUser.img}
+                                src={selectedUser.profilePhoto}
                                 alt=""
                                 className="h-12 w-12 rounded-full"
                             />
 
                             <p className="text-2xl font-bold text-amber-950">
-                                {selectedUser.name}
+                                {selectedUser.FName}
                             </p>
                         </div>
 
                         <div className="flex-1 p-4 overflow-y-auto">
-                            {/* Messages */}
+                            {/* Messages will go here */}
                         </div>
 
                         <div className="p-4 border-t border-amber-300 flex gap-3">
@@ -122,7 +166,15 @@ const Chat = () => {
                                 placeholder="Type a message"
                                 className="flex-1 p-3 rounded-2xl border border-amber-950"
                             />
-                            <button className="bg-amber-950 text-white px-6 rounded-full">
+                            <button
+                                className="bg-amber-950 text-white px-6 rounded-full"
+                                onClick={() => {
+                                    socket.emit("send_message", {
+                                        text: "Hello",
+                                        to: selectedUser?._id
+                                    });
+                                }}
+                            >
                                 Send
                             </button>
                         </div>
