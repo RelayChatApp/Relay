@@ -9,57 +9,10 @@ const Chat = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [users, setUsers] = useState([]);
+    const [messages, setMessages] = useState([]);
+    const [text, setText] = useState("");
 
-
-    useEffect(() => {
-        async function ActiveUsers() {
-            try {
-                const api = await fetch(`${BASE_URL}/api/database`, {
-                    method: "GET",
-                    credentials: "include"
-                });
-
-                if (!api.ok) return;
-
-                const data = await api.json();
-                setUsers(data);
-
-            } catch (error) {
-                console.error("Failed to fetch users");
-            }
-        }
-
-        ActiveUsers();
-    }, [BASE_URL]);
-
-
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const response = await fetch(`${BASE_URL}/api/me`, {
-                    method: "GET",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
-
-                if (!response.ok) {
-                    navigate("/login");
-                    return;
-                }
-
-                const data = await response.json();
-                setCurrentUser(data.user);
-
-            } catch (error) {
-                navigate("/login");
-            }
-        }
-
-        fetchUser();
-    }, [BASE_URL, navigate]);
-
+    /* ================= SOCKET INITIALIZATION ================= */
 
     const socket = useMemo(() => {
         return io(BASE_URL, {
@@ -68,18 +21,126 @@ const Chat = () => {
     }, [BASE_URL]);
 
     useEffect(() => {
+        if (!socket) return;
 
         socket.on("connect", () => {
             console.log("Connected:", socket.id);
-            socket.emit("welcome", "hello muskan don");
+        });
+
+        socket.on("receive_message", (message) => {
+            setMessages(prev => [...prev, message]);
         });
 
         return () => {
-            socket.off("connect");
             socket.disconnect();
         };
-
     }, [socket]);
+
+    /* ================= FETCH USERS ================= */
+
+    useEffect(() => {
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/database`, {
+                    credentials: "include"
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                setUsers(data);
+
+            } catch {
+                console.error("Failed to fetch users");
+            }
+        }
+
+        fetchUsers();
+    }, [BASE_URL]);
+
+    /* ================= FETCH CURRENT USER ================= */
+
+    useEffect(() => {
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/database`, {
+                    credentials: "include"
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+
+                // Remove current user from list
+                const filtered = data.filter(
+                    user => user._id !== currentUser?._id
+                );
+
+                setUsers(filtered);
+
+            } catch {
+                console.error("Failed to fetch users");
+            }
+        }
+
+        if (currentUser) {
+            fetchUsers();
+        }
+
+    }, [BASE_URL, currentUser]);
+
+    /* ================= JOIN ROOM + LOAD HISTORY ================= */
+
+    useEffect(() => {
+        if (!selectedUser || !currentUser || !socket) return;
+
+        const roomId = [currentUser._id, selectedUser._id]
+            .sort()
+            .join("_");
+
+        socket.emit("join_room", roomId);
+
+        async function loadMessages() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/messages/${roomId}`, {
+                    credentials: "include"
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                setMessages(data);
+
+            } catch {
+                console.error("Failed to load messages");
+            }
+        }
+
+        loadMessages();
+
+    }, [selectedUser, currentUser, socket, BASE_URL]);
+
+    /* ================= SEND MESSAGE ================= */
+
+    function handleSend() {
+        if (!text.trim() || !selectedUser || !currentUser) return;
+
+        const roomId = [currentUser._id, selectedUser._id]
+            .sort()
+            .join("_");
+
+        const messageData = {
+            room: roomId,
+            text,
+            sender: currentUser._id,
+            receiver: selectedUser._id
+        };
+
+        socket.emit("send_message", messageData);
+        setText("");
+    }
+
+    /* ================= UI ================= */
 
     return (
         <div className="flex h-screen">
@@ -87,7 +148,7 @@ const Chat = () => {
             {/* SIDEBAR */}
             <div className={`bg-amber-950 text-white w-full md:w-[30%] ${selectedUser ? "hidden md:block" : "block"}`}>
                 <div className="flex justify-between items-center p-4">
-                    <p className="font-extrabold text-5xl text-center fascinate-regular text-amber-100">
+                    <p className="font-extrabold text-5xl text-amber-100">
                         Relay
                     </p>
 
@@ -110,8 +171,7 @@ const Chat = () => {
                     />
                 </div>
 
-
-                {users.map((user) => (
+                {users.map(user => (
                     <div
                         key={user._id}
                         onClick={() => setSelectedUser(user)}
@@ -135,8 +195,9 @@ const Chat = () => {
                     ${!selectedUser ? "hidden md:flex" : "flex"}
                 `}
             >
-                {selectedUser && (
+                {selectedUser && currentUser && (
                     <>
+                        {/* HEADER */}
                         <div className="flex items-center gap-4 p-4 border-b border-amber-300">
                             <button
                                 onClick={() => setSelectedUser(null)}
@@ -156,24 +217,34 @@ const Chat = () => {
                             </p>
                         </div>
 
-                        <div className="flex-1 p-4 overflow-y-auto">
-                            {/* Messages will go here */}
+                        {/* MESSAGES */}
+                        <div className="flex-1 p-4 overflow-y-auto space-y-2">
+                            {messages.map((msg) => (
+                                <div
+                                    key={msg._id}
+                                    className={`p-2 rounded-lg max-w-[60%] ${msg.sender === currentUser._id
+                                        ? "bg-amber-950 text-white ml-auto"
+                                        : "bg-white text-black"
+                                        }`}
+                                >
+                                    {msg.text}
+                                </div>
+                            ))}
                         </div>
 
+                        {/* INPUT */}
                         <div className="p-4 border-t border-amber-300 flex gap-3">
                             <input
                                 type="text"
+                                value={text}
+                                onChange={(e) => setText(e.target.value)}
                                 placeholder="Type a message"
                                 className="flex-1 p-3 rounded-2xl border border-amber-950"
                             />
+
                             <button
                                 className="bg-amber-950 text-white px-6 rounded-full"
-                                onClick={() => {
-                                    socket.emit("send_message", {
-                                        text: "Hello",
-                                        to: selectedUser?._id
-                                    });
-                                }}
+                                onClick={handleSend}
                             >
                                 Send
                             </button>

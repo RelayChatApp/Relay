@@ -8,16 +8,23 @@ const { Server } = require("socket.io");
 
 const connectDB = require("./Database/Mongodb");
 const socketHandler = require("./Sockets/socket");
-const userInDb = require("./Database/userDatabase")
+
+const Authentication = require("./Routes/Authentication");
+const Pages = require("./Routes/Pages");
+const userInDb = require("./Database/userDatabase");
+const messageRoutes = require("./Routes/messageRoutes");
+const ReactRoutes = require("./Routes/ReactRoutes");
 
 const app = express();
-const server = http.createServer(app); // create http server properly
+const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
-// Connect Database
+/* ================= DATABASE ================= */
+
 connectDB();
 
-// Middlewares
+/* ================= MIDDLEWARE ================= */
+
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
@@ -26,31 +33,32 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Serve uploaded images
 app.use("/uploads", express.static("uploads"));
 
-// Routes
-const Authentication = require("./Routes/Authentication");
-const ReactRoutes = require("./Routes/ReactRoutes");
-const Pages = require("./Routes/Pages");
+/* ================= API ROUTES (MUST COME FIRST) ================= */
 
 app.use("/api", Authentication);
 app.use("/api", Pages);
-app.use("/", ReactRoutes);
-app.use("/api", userInDb)
+app.use("/api", userInDb);
+app.use("/api", messageRoutes);
 
+/* ================= REACT ROUTES (MUST BE LAST) ================= */
+
+app.use("/", ReactRoutes);
+
+/* ================= SOCKET.IO ================= */
 
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:5173",
         methods: ["GET", "POST"],
         credentials: true
-    },
+    }
 });
-
 
 socketHandler(io);
 
+/* ================= START SERVER ================= */
 
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
