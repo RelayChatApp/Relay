@@ -4,7 +4,8 @@ import { io } from "socket.io-client";
 
 const Chat = () => {
     const navigate = useNavigate();
-    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const BASE_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:3000";
 
     const [selectedUser, setSelectedUser] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
@@ -16,7 +17,7 @@ const Chat = () => {
 
     const socket = useMemo(() => {
         return io(BASE_URL, {
-            withCredentials: true
+            withCredentials: true,
         });
     }, [BASE_URL]);
 
@@ -28,7 +29,7 @@ const Chat = () => {
         });
 
         socket.on("receive_message", (message) => {
-            setMessages(prev => [...prev, message]);
+            setMessages((prev) => [...prev, message]);
         });
 
         return () => {
@@ -41,31 +42,12 @@ const Chat = () => {
     useEffect(() => {
         async function fetchUsers() {
             try {
-                const res = await fetch(`${BASE_URL}/api/database`, {
-                    credentials: "include"
-                });
-
-                if (!res.ok) return;
-
-                const data = await res.json();
-                setUsers(data);
-
-            } catch {
-                console.error("Failed to fetch users");
-            }
-        }
-
-        fetchUsers();
-    }, [BASE_URL]);
-
-    /* ================= FETCH CURRENT USER ================= */
-
-    useEffect(() => {
-        async function fetchUsers() {
-            try {
-                const res = await fetch(`${BASE_URL}/api/database`, {
-                    credentials: "include"
-                });
+                const res = await fetch(
+                    `${BASE_URL}/api/database`,
+                    {
+                        credentials: "include",
+                    }
+                );
 
                 if (!res.ok) return;
 
@@ -83,18 +65,45 @@ const Chat = () => {
             }
         }
 
-        if (currentUser) {
-            fetchUsers();
+        fetchUsers();
+    }, [BASE_URL]);
+
+    /* ================= FETCH CURRENT USER ================= */
+
+    useEffect(() => {
+        async function fetchUser() {
+            try {
+                const res = await fetch(
+                    `${BASE_URL}/api/me`,
+                    {
+                        credentials: "include",
+                    }
+                );
+
+                if (!res.ok) {
+                    navigate("/login");
+                    return;
+                }
+
+                const data = await res.json();
+                setCurrentUser(data.user);
+            } catch {
+                navigate("/login");
+            }
         }
 
-    }, [BASE_URL, currentUser]);
+        fetchUser();
+    }, [BASE_URL, navigate]);
 
     /* ================= JOIN ROOM + LOAD HISTORY ================= */
 
     useEffect(() => {
         if (!selectedUser || !currentUser || !socket) return;
 
-        const roomId = [currentUser._id, selectedUser._id]
+        const roomId = [
+            currentUser._id,
+            selectedUser._id,
+        ]
             .sort()
             .join("_");
 
@@ -102,22 +111,23 @@ const Chat = () => {
 
         async function loadMessages() {
             try {
-                const res = await fetch(`${BASE_URL}/api/messages/${roomId}`, {
-                    credentials: "include"
-                });
+                const res = await fetch(
+                    `${BASE_URL}/api/messages/${roomId}`,
+                    {
+                        credentials: "include",
+                    }
+                );
 
                 if (!res.ok) return;
 
                 const data = await res.json();
                 setMessages(data);
-
             } catch {
                 console.error("Failed to load messages");
             }
         }
 
         loadMessages();
-
     }, [selectedUser, currentUser, socket, BASE_URL]);
 
     /* ================= SEND MESSAGE ================= */
@@ -125,7 +135,10 @@ const Chat = () => {
     function handleSend() {
         if (!text.trim() || !selectedUser || !currentUser) return;
 
-        const roomId = [currentUser._id, selectedUser._id]
+        const roomId = [
+            currentUser._id,
+            selectedUser._id,
+        ]
             .sort()
             .join("_");
 
@@ -133,7 +146,7 @@ const Chat = () => {
             room: roomId,
             text,
             sender: currentUser._id,
-            receiver: selectedUser._id
+            receiver: selectedUser._id,
         };
 
         socket.emit("send_message", messageData);
@@ -144,9 +157,13 @@ const Chat = () => {
 
     return (
         <div className="flex h-screen">
-
             {/* SIDEBAR */}
-            <div className={`bg-amber-950 text-white w-full md:w-[30%] ${selectedUser ? "hidden md:block" : "block"}`}>
+            <div
+                className={`bg-amber-950 text-white w-full md:w-[30%] ${selectedUser
+                    ? "hidden md:block"
+                    : "block"
+                    }`}
+            >
                 <div className="flex justify-between items-center p-4">
                     <p className="font-extrabold text-5xl text-amber-100">
                         Relay
@@ -171,7 +188,7 @@ const Chat = () => {
                     />
                 </div>
 
-                {users.map(user => (
+                {users.map((user) => (
                     <div
                         key={user._id}
                         onClick={() => setSelectedUser(user)}
@@ -182,25 +199,28 @@ const Chat = () => {
                             alt=""
                             className="h-12 w-12 rounded-full"
                         />
-                        <p className="font-semibold">{user.FName}</p>
+                        <p className="font-semibold">
+                            {user.FName}
+                        </p>
                     </div>
                 ))}
             </div>
 
             {/* CHAT AREA */}
             <div
-                className={`
-                    bg-amber-100 flex flex-col
-                    w-full md:w-[70%]
-                    ${!selectedUser ? "hidden md:flex" : "flex"}
-                `}
+                className={`bg-amber-100 flex flex-col w-full md:w-[70%] ${!selectedUser
+                    ? "hidden md:flex"
+                    : "flex"
+                    }`}
             >
                 {selectedUser && currentUser && (
                     <>
                         {/* HEADER */}
                         <div className="flex items-center gap-4 p-4 border-b border-amber-300">
                             <button
-                                onClick={() => setSelectedUser(null)}
+                                onClick={() =>
+                                    setSelectedUser(null)
+                                }
                                 className="md:hidden text-xl"
                             >
                                 ←
@@ -222,7 +242,8 @@ const Chat = () => {
                             {messages.map((msg) => (
                                 <div
                                     key={msg._id}
-                                    className={`p-2 rounded-lg max-w-[60%] ${msg.sender === currentUser._id
+                                    className={`p-2 rounded-lg max-w-[60%] ${msg.sender ===
+                                        currentUser._id
                                         ? "bg-amber-950 text-white ml-auto"
                                         : "bg-white text-black"
                                         }`}
@@ -237,7 +258,9 @@ const Chat = () => {
                             <input
                                 type="text"
                                 value={text}
-                                onChange={(e) => setText(e.target.value)}
+                                onChange={(e) =>
+                                    setText(e.target.value)
+                                }
                                 placeholder="Type a message"
                                 className="flex-1 p-3 rounded-2xl border border-amber-950"
                             />
