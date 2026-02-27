@@ -40,33 +40,32 @@ const Chat = () => {
     /* ================= FETCH USERS ================= */
 
     useEffect(() => {
+        if (!currentUser) return;
+
         async function fetchUsers() {
             try {
                 const res = await fetch(
                     `${BASE_URL}/api/database`,
-                    {
-                        credentials: "include",
-                    }
+                    { credentials: "include" }
                 );
 
                 if (!res.ok) return;
 
                 const data = await res.json();
 
-                // Remove current user from list
                 const filtered = data.filter(
-                    user => user._id !== currentUser?._id
+                    user => user._id !== currentUser._id
                 );
 
                 setUsers(filtered);
 
-            } catch {
-                console.error("Failed to fetch users");
+            } catch (err) {
+                console.error("Failed to fetch users", err);
             }
         }
 
         fetchUsers();
-    }, [BASE_URL]);
+    }, [BASE_URL, currentUser]);
 
     /* ================= FETCH CURRENT USER ================= */
 
@@ -165,7 +164,7 @@ const Chat = () => {
                     }`}
             >
                 <div className="flex justify-between items-center p-4">
-                    <p className="font-extrabold text-5xl text-amber-100">
+                    <p className="font-extrabold text-5xl text-amber-100 fascinate-regular">
                         Relay
                     </p>
 
@@ -180,7 +179,7 @@ const Chat = () => {
                     )}
                 </div>
 
-                <div className="px-4">
+                <div className="px-4 mb-2">
                     <input
                         type="search"
                         placeholder="Search"
@@ -216,7 +215,7 @@ const Chat = () => {
                 {selectedUser && currentUser && (
                     <>
                         {/* HEADER */}
-                        <div className="flex items-center gap-4 p-4 border-b border-amber-300">
+                        <div className="flex items-center  gap-4 p-4 border-b border-amber-300">
                             <button
                                 onClick={() =>
                                     setSelectedUser(null)

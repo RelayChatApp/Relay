@@ -143,7 +143,7 @@ const Signup = () => {
                     <div className="flex justify-center mt-6">
                         <button
                             type="submit"
-                            className='absolute bottom-15 p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg hover:text-amber-950 hover:bg-amber-50 cursor-pointer'
+                            className='absolute bottom-5 p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg hover:text-amber-950 hover:bg-amber-50 cursor-pointer'
                         >
                             Create Account
                         </button>

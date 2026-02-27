@@ -112,14 +112,11 @@ const Login = () => {
                         <div className="flex items-center justify-center">
                             <button
                                 type="submit"
-                                className='absolute bottom-15 p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg hover:text-amber-950 hover:bg-amber-50 cursor-pointer'
+                                className='absolute bottom-5 p-4 w-[90%] sm:w-100 rounded-[100px] shadow-2xl bg-amber-950 text-white font-bold text-lg hover:text-amber-950 hover:bg-amber-50 cursor-pointer'
                             >
                                 Login
                             </button>
 
-                            <h4 className="text-center absolute bottom-7 text-gray-400 mt-5 font-semibold">
-                                Forgot Password?
-                            </h4>
                         </div>
                     </form>
                 </div>
