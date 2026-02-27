@@ -12,7 +12,7 @@ const socketHandler = require("./Sockets/socket");
 const Authentication = require("./Routes/Authentication");
 const Pages = require("./Routes/Pages");
 const userInDb = require("./Database/userDatabase");
-const messageRoutes = require("./Routes/messageRoutes");
+const messageRoutes = require("./Routes/MessageRoute");
 const ReactRoutes = require("./Routes/ReactRoutes");
 
 const app = express();

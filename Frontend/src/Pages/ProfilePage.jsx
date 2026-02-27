@@ -180,7 +180,7 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="flex justify-center">
-                    <div className="flex gap-x-10 absolute bottom-15">
+                    <div className="flex gap-x-10 absolute bottom-5">
                         <button
                             type="button"
                             onClick={handleLogout}
