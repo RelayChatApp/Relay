@@ -13,7 +13,7 @@ const Authentication = require("./Routes/Authentication");
 const Pages = require("./Routes/Pages");
 const userInDb = require("./Database/userDatabase");
 const messageRoutes = require("./Routes/MessageRoute");
-const ReactRoutes = require("./Routes/ReactRoutes");
+// const ReactRoutes = require("./Routes/ReactRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -44,7 +44,7 @@ app.use("/api", messageRoutes);
 
 /* ================= REACT ROUTES (MUST BE LAST) ================= */
 
-app.use("/", ReactRoutes);
+// app.use("/", ReactRoutes);
 
 /* ================= SOCKET.IO ================= */
 
