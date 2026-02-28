@@ -12,6 +12,7 @@ const Chat = () => {
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState("");
+    const [search, setSearch] = useState(""); // ✅ ADDED
 
     /* ================= SOCKET INITIALIZATION ================= */
 
@@ -28,14 +29,51 @@ const Chat = () => {
             console.log("Connected:", socket.id);
         });
 
-        socket.on("receive_message", (message) => {
-            setMessages((prev) => [...prev, message]);
-        });
-
         return () => {
             socket.disconnect();
         };
     }, [socket]);
+
+    /* ================= RECEIVE MESSAGE ================= */
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleReceive = (message) => {
+            setMessages((prev) => [...prev, message]);
+        };
+
+        socket.on("receive_message", handleReceive);
+
+        return () => {
+            socket.off("receive_message", handleReceive);
+        };
+    }, [socket]);
+
+    /* ================= FETCH CURRENT USER ================= */
+
+    useEffect(() => {
+        async function fetchUser() {
+            try {
+                const res = await fetch(
+                    `${BASE_URL}/api/me`,
+                    { credentials: "include" }
+                );
+
+                if (!res.ok) {
+                    navigate("/login");
+                    return;
+                }
+
+                const data = await res.json();
+                setCurrentUser(data.user);
+            } catch {
+                navigate("/login");
+            }
+        }
+
+        fetchUser();
+    }, [BASE_URL, navigate]);
 
     /* ================= FETCH USERS ================= */
 
@@ -67,37 +105,12 @@ const Chat = () => {
         fetchUsers();
     }, [BASE_URL, currentUser]);
 
-    /* ================= FETCH CURRENT USER ================= */
-
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const res = await fetch(
-                    `${BASE_URL}/api/me`,
-                    {
-                        credentials: "include",
-                    }
-                );
-
-                if (!res.ok) {
-                    navigate("/login");
-                    return;
-                }
-
-                const data = await res.json();
-                setCurrentUser(data.user);
-            } catch {
-                navigate("/login");
-            }
-        }
-
-        fetchUser();
-    }, [BASE_URL, navigate]);
-
     /* ================= JOIN ROOM + LOAD HISTORY ================= */
 
     useEffect(() => {
         if (!selectedUser || !currentUser || !socket) return;
+
+        setMessages([]);
 
         const roomId = [
             currentUser._id,
@@ -112,9 +125,7 @@ const Chat = () => {
             try {
                 const res = await fetch(
                     `${BASE_URL}/api/messages/${roomId}`,
-                    {
-                        credentials: "include",
-                    }
+                    { credentials: "include" }
                 );
 
                 if (!res.ok) return;
@@ -143,12 +154,13 @@ const Chat = () => {
 
         const messageData = {
             room: roomId,
-            text,
+            text: text.trim(),
             sender: currentUser._id,
             receiver: selectedUser._id,
         };
 
         socket.emit("send_message", messageData);
+
         setText("");
     }
 
@@ -183,26 +195,49 @@ const Chat = () => {
                     <input
                         type="search"
                         placeholder="Search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                         className="w-full p-2 bg-amber-50 text-black"
                     />
                 </div>
 
-                {users.map((user) => (
-                    <div
-                        key={user._id}
-                        onClick={() => setSelectedUser(user)}
-                        className="p-4 hover:bg-amber-900 cursor-pointer flex items-center gap-3"
-                    >
-                        <img
-                            src={user.profilePhoto}
-                            alt=""
-                            className="h-12 w-12 rounded-full"
-                        />
-                        <p className="font-semibold">
-                            {user.FName}
-                        </p>
-                    </div>
-                ))}
+                {users
+                    .filter((user) =>
+                        user.FName.toLowerCase().includes(search.toLowerCase())
+                    )
+                    .map((user) => (
+                        <div
+                            key={user._id}
+                            onClick={() => setSelectedUser(user)}
+                            className="p-4 hover:bg-amber-900 cursor-pointer flex items-center gap-3"
+                        >
+                            <img
+                                src={user.profilePhoto}
+                                alt=""
+                                className="h-12 w-12 rounded-full"
+                            />
+
+                            <p className="font-semibold">
+                                {search
+                                    ? user.FName.split(
+                                        new RegExp(`(${search})`, "gi")
+                                    ).map((part, index) =>
+                                        part.toLowerCase() ===
+                                            search.toLowerCase() ? (
+                                            <span
+                                                key={index}
+                                                className="bg-yellow-300 text-black"
+                                            >
+                                                {part}
+                                            </span>
+                                        ) : (
+                                            part
+                                        )
+                                    )
+                                    : user.FName}
+                            </p>
+                        </div>
+                    ))}
             </div>
 
             {/* CHAT AREA */}
@@ -215,7 +250,7 @@ const Chat = () => {
                 {selectedUser && currentUser && (
                     <>
                         {/* HEADER */}
-                        <div className="flex items-center  gap-4 p-4 border-b border-amber-300">
+                        <div className="flex items-center gap-4 p-4 border-b border-amber-300">
                             <button
                                 onClick={() =>
                                     setSelectedUser(null)
