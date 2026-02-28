@@ -25,10 +25,23 @@ connectDB();
 
 /* ================= MIDDLEWARE ================= */
 
-app.use(cors({
-    origin: "http://localhost:5173",
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://relay-1-g5dy.onrender.com"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true
-}));
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -49,11 +62,11 @@ app.use("/api", messageRoutes);
 /* ================= SOCKET.IO ================= */
 
 const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-        credentials: true
-    }
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
 
 socketHandler(io);
@@ -61,5 +74,5 @@ socketHandler(io);
 /* ================= START SERVER ================= */
 
 server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
