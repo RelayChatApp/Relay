@@ -12,21 +12,17 @@ router.post("/signup", async (req, res) => {
     try {
         const { email, FName, password } = req.body;
 
-        // Basic validation
         if (!email || !FName || !password) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        // Check existing user
         const isExists = await User.findOne({ email });
         if (isExists) {
             return res.status(400).json({ message: "Email already registered" });
         }
 
-        // Hash password
         const hashPass = await bcrypt.hash(password, 10);
 
-        // Create user
         await User.create({
             email,
             FName,
@@ -72,8 +68,8 @@ router.post("/login", async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false, // set true in production HTTPS
-            sameSite: "lax",
+            secure: true,           // required for HTTPS (Render)
+            sameSite: "none",       // required for cross-origin
             path: "/",
             maxAge: 3 * 24 * 60 * 60 * 1000,
         });
@@ -94,9 +90,9 @@ router.post("/login", async (req, res) => {
 router.post("/logout", (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
-        secure: false,
+        secure: true,
+        sameSite: "none",
         path: "/",
-        sameSite: "lax",
     });
 
     return res.status(200).json({
@@ -130,6 +126,5 @@ router.get("/me", async (req, res) => {
         return res.status(401).json({ message: "Unauthorized" });
     }
 });
-
 
 module.exports = router;
