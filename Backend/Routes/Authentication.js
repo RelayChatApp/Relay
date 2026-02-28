@@ -69,7 +69,7 @@ router.post("/login", async (req, res) => {
         res.cookie("token", token, {
             httpOnly: true,
             secure: true,           // required for HTTPS (Render)
-            sameSite: "none",       // required for cross-origin
+            sameSite: "lax",       // required for cross-origin
             path: "/",
             maxAge: 3 * 24 * 60 * 60 * 1000,
         });
