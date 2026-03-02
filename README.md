@@ -9,7 +9,6 @@ Relay is a real-time chat application built using the MERN stack. The system is 
 Frontend
 
 * React
-* Context API / Redux (state management)
 * Socket.IO Client
 * Tailwind CSS / CSS
 
@@ -148,6 +147,9 @@ npm start
 * End-to-end encryption
 
 ---
+
+##Live 
+https://relay-1-g5dy.onrender.com/
 
 ## Contributors
 
